@@ -281,19 +281,53 @@ export function useGameLogic(
 					// Facteur de progression dépendant du niveau - niveau 1 beaucoup plus rapide
 					let progressFactor = 1;
 					if (state.level === 1) {
-						// Niveau 1: progression ultra rapide (5x plus rapide) - MODIFIÉ
-						progressFactor = 5;
+						// Niveau 1: progression ultra rapide (8x plus rapide) - AUGMENTÉ
+						progressFactor = 8;
 					} else if (state.level === 2) {
-						// Niveau 2: progression rapide (2x) - MODIFIÉ
-						progressFactor = 2;
+						// Niveau 2: progression rapide (3x) - AUGMENTÉ
+						progressFactor = 3;
 					} else {
 						// Niveau 3+: progression normale
-						progressFactor = 1;
+						progressFactor = 1.5;
 					}
 
 					// Calculer l'incrément de progression
 					const progressIncrement =
 						(baseProgression / (5 + (state.level - 1))) * progressFactor;
+
+					// Log pour débogage
+					console.log(
+						`Progression de niveau: ${
+							state.levelProgress
+						} + ${progressIncrement} = ${
+							state.levelProgress + progressIncrement
+						}%`
+					);
+
+					// Si la progression dépasse 100%, passer directement au niveau suivant
+					if (
+						state.levelProgress + progressIncrement >= 100 &&
+						state.level < MAX_LEVEL
+					) {
+						// Déclencher le changement de niveau directement
+						const newLevel = state.level + 1;
+
+						// Stocker l'information de level-up
+						levelUpRef.current = {
+							newLevel,
+							hasLeveledUp: true,
+						};
+
+						console.log(`Passage direct au niveau ${newLevel}`);
+
+						return {
+							...state,
+							totalSorted: state.totalSorted + action.payload,
+							level: newLevel,
+							levelProgress: 0,
+							gameSpeed: Math.min(state.gameSpeed + 0.15, 1.5),
+						};
+					}
 
 					return {
 						...state,
@@ -971,10 +1005,48 @@ export function useGameLogic(
 
 			// Pour le passage au niveau 2, appliquer un boost spécial
 			if (levelUpRef.current.newLevel === 2) {
-				// Générer immédiatement une vague d'objets plus intense
+				// Afficher un message de confirmation pour le niveau 2
+				dispatch({
+					type: "SHOW_TIP",
+					payload:
+						"Niveau 2 débloqué! La vitesse des objets augmente, soyez plus rapide!",
+				});
+
+				// Nettoyer tout conseil précédent
+				if (tipTimeoutRef.current) {
+					clearTimeout(tipTimeoutRef.current);
+				}
+
+				// Cacher le tip après 4 secondes
+				tipTimeoutRef.current = setTimeout(() => {
+					dispatch({ type: "HIDE_TIP" });
+				}, 4000);
+
+				// Générer immédiatement une vague d'objets plus intense pour montrer le changement
 				setTimeout(() => {
 					if (!gameState.gameOver && !gameState.isPaused) {
-						spawnWaveRef.current();
+						// Créer une vague plus imposante pour marquer le changement
+						const itemsToSpawn = 4;
+						const itemsToUse =
+							!gameItems || gameItems.length === 0 ? fallbackItems : gameItems;
+
+						const specialItems: GameItem[] = [];
+						for (let i = 0; i < itemsToSpawn; i++) {
+							const randomItem =
+								itemsToUse[Math.floor(Math.random() * itemsToUse.length)];
+							if (randomItem) {
+								specialItems.push(randomItem);
+							}
+						}
+
+						// Ajouter les items avec un délai variable
+						for (let i = 0; i < specialItems.length; i++) {
+							setTimeout(() => {
+								if (!gameState.gameOver && !gameState.isPaused) {
+									spawnSpecificItemRef.current(specialItems[i]);
+								}
+							}, 1500 + i * 300);
+						}
 					}
 				}, 1500);
 			}
@@ -982,7 +1054,7 @@ export function useGameLogic(
 			// Réinitialiser pour ne pas répéter l'événement
 			levelUpRef.current.hasLeveledUp = false;
 		}
-	}, [gameState.level, gameState.isPaused, gameState.gameOver]);
+	}, [gameState.level, gameState.isPaused, gameState.gameOver, dispatch]);
 
 	// Nouvelle fonction pour fermer manuellement un tip
 	const hideTip = useCallback(() => {
@@ -1136,6 +1208,25 @@ export function useGameLogic(
 		stopGame,
 	]);
 
+	// Ajouter directement des points au score (pour power-up scoreBoost)
+	const addScore = useCallback((points: number) => {
+		dispatch({ type: "UPDATE_SCORE", payload: points });
+
+		// Afficher un message de confirmation
+		dispatch({
+			type: "SHOW_TIP",
+			payload: `+${points} points bonus!`,
+		});
+
+		if (tipTimeoutRef.current) {
+			clearTimeout(tipTimeoutRef.current);
+		}
+
+		tipTimeoutRef.current = setTimeout(() => {
+			dispatch({ type: "HIDE_TIP" });
+		}, 2000);
+	}, []);
+
 	return {
 		// Game state
 		score: gameState.score,
@@ -1171,5 +1262,6 @@ export function useGameLogic(
 			dispatch({ type: "MODIFY_SPEED", payload: value }),
 		addLife,
 		resetState,
+		addScore,
 	};
 }

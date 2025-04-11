@@ -235,7 +235,7 @@ const GameHUD: React.FC<GameHUDProps> = ({
 				</div>
 
 				{/* Barre de progression du niveau améliorée */}
-				<div className="w-full h-2 sm:h-3 bg-slate-200/80 dark:bg-slate-700/80 rounded-full mb-2 sm:mb-3 overflow-hidden shadow-inner backdrop-blur-sm">
+				<div className="w-full h-2 sm:h-4 bg-slate-200/80 dark:bg-slate-700/80 rounded-full mb-2 sm:mb-3 overflow-hidden shadow-inner backdrop-blur-sm relative">
 					<motion.div
 						className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-sky-500"
 						style={{ width: `${levelProgress}%` }}
@@ -243,7 +243,40 @@ const GameHUD: React.FC<GameHUDProps> = ({
 						animate={{ width: `${levelProgress}%` }}
 						transition={{ duration: 0.5, ease: "easeOut" }}
 					/>
+					{/* Curseur indiquant le niveau actuel */}
+					<div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+						<div className="text-xs font-bold text-white text-shadow mix-blend-difference">
+							{levelProgress.toFixed(0)}%
+						</div>
+					</div>
+					{/* Indicateurs de progression par paliers */}
+					<div className="absolute inset-0 flex justify-between px-2">
+						{[25, 50, 75].map((threshold) => (
+							<div
+								key={threshold}
+								className={`h-full w-px ${
+									levelProgress >= threshold ? "bg-white/50" : "bg-slate-500/30"
+								}`}
+								style={{ left: `${threshold}%` }}
+							/>
+						))}
+					</div>
 				</div>
+
+				{/* Niveau avec effet de badge */}
+				<motion.div
+					className={`absolute top-14 right-4 rounded-full px-3 py-1 z-20 font-bold ${
+						isLevelChanging
+							? "bg-green-500 text-white shadow-lg"
+							: "bg-slate-100/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300"
+					}`}
+					animate={
+						isLevelChanging ? { scale: [1, 1.2, 1], y: [0, -10, 0] } : {}
+					}
+					transition={{ duration: 0.5 }}
+				>
+					Niveau {level}
+				</motion.div>
 
 				{/* Power-ups actifs avec animation améliorée */}
 				{Object.keys(activePowerUps).length > 0 && (

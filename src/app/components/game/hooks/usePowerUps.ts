@@ -16,10 +16,17 @@ interface UsePowerUpsProps {
 	gameStarted: boolean;
 	gameOver: boolean;
 	isPaused: boolean;
-	onPointsMultiplierChange: (multiplier: number) => void;
-	onGameSpeedChange: (speedModifier: number) => void;
+	onPointsMultiplierChange: (value: number) => void;
+	onGameSpeedChange: (value: number) => void;
 	onItemsClear: () => void;
 	onLifeAdded: () => void;
+	onScoreBoost?: (value: number) => void;
+}
+
+// Interface pour les power-ups actifs
+interface ActivePowerUp {
+	id: string;
+	endTime: number;
 }
 
 export function usePowerUps({
@@ -27,18 +34,21 @@ export function usePowerUps({
 	gameOver,
 	isPaused,
 	onPointsMultiplierChange,
-	onGameSpeedChange,
 	onItemsClear,
 	onLifeAdded,
+	onScoreBoost = () => {},
 }: UsePowerUpsProps) {
 	const [currentPowerUp, setCurrentPowerUp] = useState<{
 		powerUp: PowerUp;
 		position: { x: number; y: number };
 	} | null>(null);
 
-	const [activePowerUps, setActivePowerUps] = useState<string[]>([]);
+	// Power-ups actifs
+	const [activePowerUps, setActivePowerUps] = useState<
+		Record<string, ActivePowerUp>
+	>({});
 	const [activePowerUpDetails, setActivePowerUpDetails] = useState<
-		Record<string, { id: string; endTime: number }>
+		Record<string, ActivePowerUp>
 	>({});
 
 	const [showParticles, setShowParticles] = useState<{
@@ -132,32 +142,6 @@ export function usePowerUps({
 			const endTime = now + powerUp.duration;
 
 			switch (powerUp.type) {
-				case "slowTime":
-					// Ralentir la chute des objets
-					onGameSpeedChange(0.4); // 60% plus lent (0.4 au lieu de 1.0)
-
-					// Enregistrer les détails pour pouvoir revenir à la vitesse normale
-					setActivePowerUpDetails((prev) => ({
-						...prev,
-						slowTime: { id: powerUp.id, endTime },
-					}));
-
-					// Créer un timer pour terminer l'effet
-					if (powerUpEndTimersRef.current.slowTime) {
-						clearTimeout(powerUpEndTimersRef.current.slowTime);
-					}
-
-					powerUpEndTimersRef.current.slowTime = setTimeout(() => {
-						onGameSpeedChange(1); // Revenir à la vitesse normale
-						setActivePowerUps((prev) => prev.filter((id) => id !== powerUp.id));
-						setActivePowerUpDetails((prev) => {
-							const newDetails = { ...prev };
-							delete newDetails.slowTime;
-							return newDetails;
-						});
-					}, powerUp.duration);
-					break;
-
 				case "magnet":
 					// Power-up d'aimantation - tri automatique
 					setActivePowerUpDetails((prev) => ({
@@ -171,7 +155,11 @@ export function usePowerUps({
 					}
 
 					powerUpEndTimersRef.current.magnet = setTimeout(() => {
-						setActivePowerUps((prev) => prev.filter((id) => id !== powerUp.id));
+						setActivePowerUps((prev) => {
+							const newState = { ...prev };
+							delete newState[powerUp.id];
+							return newState;
+						});
 						setActivePowerUpDetails((prev) => {
 							const newDetails = { ...prev };
 							delete newDetails.magnet;
@@ -183,7 +171,7 @@ export function usePowerUps({
 				case "extraLife":
 					// Ajouter une vie
 					onLifeAdded();
-					setActivePowerUps((prev) => prev.filter((id) => id !== powerUp.id)); // Effet instantané
+					// Effet instantané, ne pas ajouter aux power-ups actifs
 					break;
 
 				case "doublePoints":
@@ -202,7 +190,11 @@ export function usePowerUps({
 
 					powerUpEndTimersRef.current.doublePoints = setTimeout(() => {
 						onPointsMultiplierChange(1);
-						setActivePowerUps((prev) => prev.filter((id) => id !== powerUp.id));
+						setActivePowerUps((prev) => {
+							const newState = { ...prev };
+							delete newState[powerUp.id];
+							return newState;
+						});
 						setActivePowerUpDetails((prev) => {
 							const newDetails = { ...prev };
 							delete newDetails.doublePoints;
@@ -214,13 +206,16 @@ export function usePowerUps({
 				case "clearScreen":
 					// Trier automatiquement tous les déchets à l'écran
 					onItemsClear();
-
 					// L'effet est instantané
-					setActivePowerUps((prev) => prev.filter((id) => id !== powerUp.id));
+					break;
+
+				case "scoreBoost":
+					// Nouveau power-up: ajoute des points instantanément
+					onScoreBoost(50);
 					break;
 			}
 		},
-		[onGameSpeedChange, onLifeAdded, onPointsMultiplierChange, onItemsClear]
+		[onLifeAdded, onPointsMultiplierChange, onItemsClear, onScoreBoost]
 	);
 
 	// Collecter un power-up
@@ -230,8 +225,16 @@ export function usePowerUps({
 
 			const { powerUp } = currentPowerUp;
 
-			// Ajouter le power-up aux power-ups actifs
-			setActivePowerUps((prev) => [...prev, powerUpId]);
+			// Ajouter le power-up aux power-ups actifs s'il a une durée
+			if (powerUp.duration > 0) {
+				setActivePowerUps((prev) => ({
+					...prev,
+					[powerUpId]: {
+						id: powerUpId,
+						endTime: Date.now() + powerUp.duration,
+					},
+				}));
+			}
 
 			// Effet de particules
 			if (gameAreaRect) {
@@ -273,6 +276,116 @@ export function usePowerUps({
 		};
 	}, []);
 
+	// Activer un power-up
+	const activatePowerUp = useCallback(
+		(powerUp: PowerUpType) => {
+			// S'assurer qu'un seul power-up du même type est actif à la fois
+			if (activePowerUps[powerUp]) {
+				return;
+			}
+
+			const now = Date.now();
+			const powerUpConfig = powerUps.find((p) => p.type === powerUp);
+
+			if (!powerUpConfig) {
+				console.error("PowerUp configuration not found:", powerUp);
+				return;
+			}
+
+			// Effet de particules pour le power-up
+			setShowParticles({
+				effect: "powerUp",
+				x: 50, // Centré
+				y: 50, // Centré
+				colors: ["#3498db", "#2980b9"],
+				count: 15,
+				speed: 5,
+				size: { min: 5, max: 15 },
+				duration: 1000,
+			});
+
+			// Activer l'effet du power-up selon son type
+			switch (powerUp) {
+				case "doublePoints":
+					onPointsMultiplierChange(2);
+					break;
+				case "clearScreen":
+					onItemsClear();
+					break;
+				case "extraLife":
+					onLifeAdded();
+					break;
+				case "magnet":
+					// La logique du magnet reste inchangée
+					break;
+				case "scoreBoost":
+					// Nouveau power-up: ajoute 50 points instantanément
+					onScoreBoost(50);
+					break;
+			}
+
+			// Pour les power-ups avec durée, programmer leur fin
+			if (powerUpConfig.duration > 0) {
+				setActivePowerUps((prev) => ({
+					...prev,
+					[powerUp]: {
+						id: powerUp,
+						endTime: now + powerUpConfig.duration,
+					},
+				}));
+			}
+		},
+		[
+			activePowerUps,
+			onItemsClear,
+			onLifeAdded,
+			onPointsMultiplierChange,
+			onScoreBoost,
+		]
+	);
+
+	// Dans useEffect qui gère l'expiration des power-ups
+	useEffect(() => {
+		if (isPaused || gameOver || !gameStarted) return;
+
+		const powerUpTimer = setInterval(() => {
+			const now = Date.now();
+			let hasExpired = false;
+			const newPowerUps = { ...activePowerUps };
+
+			Object.keys(activePowerUps).forEach((key) => {
+				const powerUp = activePowerUps[key];
+				if (powerUp.endTime <= now) {
+					// Désactiver l'effet selon le type
+					switch (key as PowerUpType) {
+						case "doublePoints":
+							onPointsMultiplierChange(1);
+							break;
+						case "magnet":
+							// Désactivation du magnet
+							break;
+					}
+
+					// Supprimer le power-up expiré
+					delete newPowerUps[key];
+					hasExpired = true;
+				}
+			});
+
+			if (hasExpired) {
+				setActivePowerUps(newPowerUps);
+			}
+		}, 100);
+
+		return () => clearInterval(powerUpTimer);
+	}, [
+		activePowerUps,
+		gameOver,
+		gameStarted,
+		isPaused,
+		onPointsMultiplierChange,
+	]);
+
 	return {
 		currentPowerUp,
 		activePowerUps,
@@ -284,5 +397,6 @@ export function usePowerUps({
 		setShowParticles,
 		setTip,
 		setShowTip,
+		activatePowerUp,
 	};
 }

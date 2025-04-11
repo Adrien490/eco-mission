@@ -43,8 +43,18 @@ export const itemIcons = {
 	medicinePill: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#e74c3c"><path d="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6V13z"/></svg>`,
 	umbrella: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#3498db"><path d="M13.127,14.56l1.43-1.43L6.44,5.016l-1.43,1.43L13.127,14.56z M19.42,5.016c0.39-0.39,0.39-1.03,0-1.43l-2.13-2.13c-0.39-0.39-1.03-0.39-1.43,0l-1.43,1.43l3.55,3.56L19.42,5.016z M3,17.25V21h3.75L17.81,9.94l-3.75-3.75L3,17.25z"/></svg>`,
 	coffeeGrounds: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#795548"><path d="M20,3H4v10c0,2.21,1.79,4,4,4h6c2.21,0,4-1.79,4-4v-3h2c1.11,0,2-0.89,2-2V5C22,3.89,21.11,3,20,3z M16,13.17c0,1.52-1.2,2.83-2.67,2.83H8.67C7.2,16,6,14.7,6,13.17V5h10V13.17z"/></svg>`,
-	styrofoam: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#ecf0f1"><path d="M19,3h-4.18C14.4,1.84,13.3,1,12,1c-1.3,0-2.4,0.84-2.82,2H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z"/></svg>`,
+	styrofoam: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#ecf0f1"><path d="M19,3h-4.18C14.4,1.84,13.3,1,12,1c-1.3,0-2.4,0.84-2.82,2H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1 0 2-0.9 2-2V5C21,3.9,20.1,3,19,3z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z"/></svg>`,
 	paint: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#9b59b6"><path d="M18,4V3c0-0.55-0.45-1-1-1H5C4.45,2,4,2.45,4,3v4c0,0.55,0.45,1,1,1h12c0.55,0,1-0.45,1-1V6h1v4H9v10c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-9h8V4H18z"/></svg>`,
+	teabag: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#C4A484"><path d="M4,2V4H7V8C7,11.87 10.13,15 14,15C17.87,15 21,11.87 21,8V4H20V2H4M6,6H18V8C18,10.76 16.76,13 14,13C11.24,13 10,10.76 10,8V6H9V4"/></svg>`,
+	wine: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#722F37"><path d="M6,3L6,7A2,2 0 0,0 8,9H16A2,2 0 0,0 18,7V3H6M17,11H7A1,1 0 0,0 6,12A1,1 0 0,0 7,13H8V20A2,2 0 0,0 10,22H14A2,2 0 0,0 16,20V13H17A1,1 0 0,0 18,12A1,1 0 0,0 17,11Z"/></svg>`,
+	pizza: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#f39c12"><path d="M12,15A2,2 0 0,1 10,13C10,11.89 10.9,11 12,11A2,2 0 0,1 14,13A2,2 0 0,1 12,15M7,7C7,5.89 7.89,5 9,5A2,2 0 0,1 11,7A2,2 0 0,1 9,9C7.89,9 7,8.1 7,7M12,2C8.43,2 5.23,3.54 3,6L12,22L21,6C18.78,3.54 15.57,2 12,2Z"/></svg>`,
+	toothbrush: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#3498db"><path d="M3,22L4,20.5C5.3,20.2 6.3,19.7 7,19L17,9L15,7L5,17C4.3,17.7 3.8,18.7 3.5,20L2,21L3,22M17.4,5.6L18.1,4.9C19.3,5.6 20,6.7 20,8C20,9.3 19.3,10.4 18.1,11.1L17.4,10.4C18.2,9.6 18.5,8.8 18.5,8C18.5,7.2 18.2,6.4 17.4,5.6M2.32,13.65L8.32,19.65L9.75,18.25L3.75,12.25L2.32,13.65M21.4,11.32L22.1,10.6C23.9,12.15 23.9,14.85 22.1,16.4L21.4,15.68C22.6,14.5 22.6,12.5 21.4,11.32M19.5,5.5L20.2,4.8C22.6,7.2 22.6,11.3 20.2,13.7L19.5,13C21.3,11 21.3,7.5 19.5,5.5M8.47,8.65L9.88,7.25L3.88,1.25L2.47,2.65L8.47,8.65Z"/></svg>`,
+	cd: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#95a5a6"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/></svg>`,
+	soap: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#3498db"><path d="M4,2A1,1 0 0,0 3,3V13A2,2 0 0,0 5,15H19A2,2 0 0,0 21,13V3A1,1 0 0,0 20,2H4M4,3H20V13A1,1 0 0,1 19,14H5A1,1 0 0,1 4,13V3M6,5V9H9V5H6M10,5V9H13V5H10M14,5V9H17V5H14Z"/></svg>`,
+	shoes: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#34495e"><path d="M9,6C7.34,6 6,7.34 6,9V15H5V9C5,6.79 6.79,5 9,5C11.21,5 13,6.79 13,9V15H12V9C12,7.34 10.66,6 9,6M7,15V21H11V15H7M17,5V9H21V15.85C21,16.38 20.75,16.89 20.31,17.23L18.46,18.71C18.16,18.95 17.81,19.15 17.41,19.15V19H13V21H17.41C18.22,21 19,20.85 19.59,20.42L21.45,18.94C22.25,18.31 22.69,17.29 22.69,16.29V9L24,9C24.55,9 25,8.55 25,8V6C25,5.45 24.55,5 24,5H17Z"/></svg>`,
+	printer: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#7f8c8d"><path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/></svg>`,
+	jeans: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#3498db"><path d="M6,21L4,8L6,2H18L20,8L18,21L12,21L6,21Z M8,4L7,8.5L7.5,15H11V4H8Z"/></svg>`,
+	watch: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#2c3e50"><path d="M17.5,2.82L16.18,1.5L15.32,2.37L14.5,1.56L13.68,2.37L12.82,1.5L11.5,2.82L10.18,1.5L9.32,2.37L8.5,1.56L7.68,2.37L6.82,1.5L5.5,2.82L4.18,1.5L3.32,2.37L2.5,1.56L1.68,2.37L0.82,1.5L0,3L0.82,4.5L1.5,5.18L0.82,5.87L1.5,6.55L0.82,7.23L1.5,7.91L0.82,8.6L1.5,9.27L0.82,9.96L2,11.13V13.33C2,15.36 3.33,17 5,17.67V18.5C5,20.33 6.67,22 8.5,22C10.33,22 12,20.33 12,18.5V17.67C13.67,17 15,15.36 15,13.33V11.13L16.18,9.96L15.5,9.27L16.18,8.6L15.5,7.91L16.18,7.23L15.5,6.55L16.18,5.87L15.5,5.18L16.18,4.5L17,3L16.18,1.5L17.5,2.82M7.23,10.41C7.57,10.75 7.94,11 8.54,11C8.89,11 9.25,10.85 9.54,10.54C9.93,10.15 10.07,9.54 10.07,8.93C10.07,8.32 9.93,7.71 9.54,7.32C9.25,7.03 8.89,6.86 8.54,6.86C7.93,6.86 7.37,7.15 7.23,7.28C6.94,7.57 6.75,7.93 6.75,8.38C6.75,8.82 6.94,9.19 7.23,10.41Z"/></svg>`,
 };
 
 export const gameItems: GameItem[] = [
@@ -400,19 +410,111 @@ export const gameItems: GameItem[] = [
 		points: 20,
 		co2: 3.0,
 	},
+	{
+		id: "teabag",
+		name: "Sachet de thé",
+		emoji: "🍵",
+		svgIcon: itemIcons.teabag,
+		type: "trash",
+		tip: "Les sachets de thé contiennent souvent du plastique. Optez pour des sachets biodégradables!",
+		points: 8,
+		co2: 0.3,
+	},
+	{
+		id: "wine",
+		name: "Bouteille de vin",
+		emoji: "🍷",
+		svgIcon: itemIcons.wine,
+		type: "recycle",
+		tip: "Les bouteilles de vin en verre se recyclent à l'infini sans perte de qualité.",
+		points: 10,
+		co2: 0.7,
+	},
+	{
+		id: "pizza",
+		name: "Boîte à pizza",
+		emoji: "🍕",
+		svgIcon: itemIcons.pizza,
+		type: "recycle",
+		tip: "Les boîtes à pizza non souillées peuvent être recyclées, mais si elles sont graisseuses, elles vont aux déchets.",
+		points: 8,
+		co2: 0.6,
+	},
+	{
+		id: "toothbrush",
+		name: "Brosse à dents",
+		emoji: "🪥",
+		svgIcon: itemIcons.toothbrush,
+		type: "reuse",
+		tip: "Les brosses à dents usagées peuvent être réutilisées pour le nettoyage ou recyclées via des programmes spéciaux.",
+		points: 12,
+		co2: 0.7,
+	},
+	{
+		id: "cd",
+		name: "CD/DVD",
+		emoji: "💿",
+		svgIcon: itemIcons.cd,
+		type: "recycle",
+		tip: "Les CD et DVD peuvent être recyclés pour récupérer le polycarbonate et l'aluminium qu'ils contiennent.",
+		points: 9,
+		co2: 0.5,
+	},
+	{
+		id: "soap",
+		name: "Savon solide",
+		emoji: "🧼",
+		svgIcon: itemIcons.soap,
+		type: "trash",
+		tip: "Les savons solides sont biodégradables et produisent moins de déchets que les gels douche en bouteille.",
+		points: 6,
+		co2: 0.2,
+	},
+	{
+		id: "shoes",
+		name: "Chaussures usées",
+		emoji: "👟",
+		svgIcon: itemIcons.shoes,
+		type: "reuse",
+		tip: "Les chaussures en bon état peuvent être données, sinon certaines marques les récupèrent pour les recycler.",
+		points: 15,
+		co2: 2.5,
+	},
+	{
+		id: "printer",
+		name: "Cartouche d'encre",
+		emoji: "🖨️",
+		svgIcon: itemIcons.printer,
+		type: "recycle",
+		tip: "Les cartouches d'encre peuvent être rechargées ou recyclées pour récupérer les matériaux.",
+		points: 18,
+		co2: 3.0,
+	},
+	{
+		id: "jeans",
+		name: "Jean usagé",
+		emoji: "👖",
+		svgIcon: itemIcons.jeans,
+		type: "reuse",
+		tip: "La fabrication d'un jean utilise jusqu'à 10 000 litres d'eau. Donnez vos jeans usagés!",
+		points: 14,
+		co2: 3.5,
+	},
+	{
+		id: "watch",
+		name: "Montre cassée",
+		emoji: "⌚",
+		svgIcon: itemIcons.watch,
+		type: "recycle",
+		tip: "Les montres contiennent des métaux précieux et des batteries qui doivent être recyclés correctement.",
+		points: 16,
+		co2: 1.8,
+	},
 ];
 
-// Power-ups
+// Power-ups SANS le ralentissement
 export const powerUps = [
-	{
-		id: "slowTime",
-		name: "Ralentissement",
-		type: "slowTime" as PowerUpType,
-		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#3498db"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>`,
-		duration: 10000, // 10 secondes
-		effect: "Ralentit la chute des objets de 50% pendant 10 secondes",
-		rarity: "common",
-	},
+	// Suppression du power-up slowTime
 	{
 		id: "magnet",
 		name: "Aimant",
@@ -448,6 +550,16 @@ export const powerUps = [
 		duration: 0, // effet instantané
 		effect: "Trie correctement tous les déchets à l'écran",
 		rarity: "epic",
+	},
+	// Nouveau power-up en remplacement
+	{
+		id: "scoreBoost",
+		name: "Bonus de Score",
+		type: "scoreBoost" as PowerUpType,
+		icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${SVG_VIEWBOX}" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="#1abc9c"><path d="M19,16.94V8.5C19,5.71 16.39,5.1 13,5L13,3H11V5C7.6,5.1 5,5.71 5,8.5V16.94C5,17.47 5.21,21 12,21C18.79,21 19,17.47 19,16.94M17,9.5V17C17,17.35 16.95,19 12,19C7.05,19 7,17.35 7,17V9.5C7,9.05 8.16,7 12,7C15.84,7 17,9.05 17,9.5M13,10H11V12H9V14H11V16H13V14H15V12H13V10Z"/></svg>`,
+		duration: 10000, // 10 secondes
+		effect: "Ajoute 50 points bonus immédiatement",
+		rarity: "common",
 	},
 ];
 

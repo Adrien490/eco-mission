@@ -13,11 +13,11 @@ export type GameItem = {
 };
 
 export type PowerUpType =
-	| "slowTime"
 	| "magnet"
 	| "extraLife"
 	| "doublePoints"
-	| "clearScreen";
+	| "clearScreen"
+	| "scoreBoost";
 
 export type Particle = {
 	id: string;

@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ecoFacts, powerUps } from "../constants";
 import { useGameLogic } from "../hooks/useGameLogic";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -26,6 +26,9 @@ export function Game() {
 	const [isGameActive, setIsGameActive] = useState(false); // État pour suivre si le jeu est actif
 	// Nouvel état pour l'animation de changement de niveau
 	const [showLevelUp, setShowLevelUp] = useState<number | null>(null);
+
+	// Référence pour l'effet sonore de level up
+	const levelUpSoundRef = useRef<HTMLAudioElement | null>(null);
 
 	// Hooks personnalisés
 	const {
@@ -102,11 +105,19 @@ export function Game() {
 		displayRandomFact,
 	]);
 
-	// Effet pour détecter le changement de niveau
+	// Effet pour détecter le changement de niveau - amélioré avec son
 	useEffect(() => {
 		if (gameLogic.level > 1 && !gameLogic.gameOver && gameLogic.gameStarted) {
 			// Afficher l'animation de changement de niveau
 			setShowLevelUp(gameLogic.level);
+
+			// Jouer le son de level up
+			if (levelUpSoundRef.current) {
+				levelUpSoundRef.current.currentTime = 0;
+				levelUpSoundRef.current
+					.play()
+					.catch((err) => console.log("Erreur lecture audio:", err));
+			}
 
 			// Cacher l'animation après quelques secondes
 			setTimeout(() => {
@@ -134,6 +145,10 @@ export function Game() {
 		},
 		onLifeAdded: () => {
 			gameLogic.addLife();
+		},
+		onScoreBoost: (points) => {
+			// Ajout du score boost
+			gameLogic.addScore(points);
 		},
 	});
 
@@ -227,6 +242,17 @@ export function Game() {
 		gameLogic.startCountdown();
 	}, [gameLogic]);
 
+	// Créer l'élément audio au montage
+	useEffect(() => {
+		levelUpSoundRef.current = new Audio("/sounds/level-up.mp3");
+		return () => {
+			if (levelUpSoundRef.current) {
+				levelUpSoundRef.current.pause();
+				levelUpSoundRef.current = null;
+			}
+		};
+	}, []);
+
 	return (
 		<div className="w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-0">
 			{/* Tutoriel */}
@@ -276,16 +302,66 @@ export function Game() {
 						{/* Animation de passage de niveau */}
 						<AnimatePresence>
 							{showLevelUp && (
-								<div className="absolute inset-0 flex items-center justify-center z-50">
-									<div className="bg-green-500/90 px-8 py-6 rounded-xl shadow-2xl transform scale-110 animate-pulse">
-										<div className="text-center text-white">
-											<h2 className="text-4xl font-bold mb-2">
-												NIVEAU {showLevelUp}
-											</h2>
-											<p className="text-xl">C&apos;est parti !</p>
+								<motion.div
+									className="absolute inset-0 flex items-center justify-center z-50"
+									initial={{ opacity: 0, scale: 0.5 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 1.2 }}
+									transition={{ duration: 0.5 }}
+								>
+									<div className="relative">
+										{/* Cercles d'effet radial */}
+										<motion.div
+											className="absolute inset-0 rounded-full border-2 border-white/30"
+											initial={{ scale: 1, opacity: 0 }}
+											animate={{ scale: [1, 1.5, 2], opacity: [0, 0.5, 0] }}
+											transition={{ duration: 2, repeat: Infinity }}
+										/>
+
+										<div className="bg-gradient-to-br from-green-600 to-green-400 px-10 py-8 rounded-xl shadow-2xl transform text-center">
+											<motion.div
+												initial={{ y: -20, opacity: 0 }}
+												animate={{ y: 0, opacity: 1 }}
+												transition={{ delay: 0.2, duration: 0.5 }}
+												className="mb-3"
+											>
+												<span className="bg-white/20 px-4 py-1 rounded-full text-white text-sm font-medium">
+													Félicitations!
+												</span>
+											</motion.div>
+
+											<div className="text-center text-white">
+												<motion.h2
+													className="text-5xl font-bold mb-2"
+													initial={{ scale: 0.8 }}
+													animate={{ scale: [0.8, 1.2, 1] }}
+													transition={{ duration: 0.8 }}
+												>
+													NIVEAU {showLevelUp}
+												</motion.h2>
+												<motion.p
+													className="text-xl"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 0.5 }}
+												>
+													C&apos;est parti !
+												</motion.p>
+
+												<motion.div
+													className="mt-4 flex justify-center items-center"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 0.7 }}
+												>
+													<div className="px-4 py-1 bg-white/30 rounded-lg text-sm">
+														Nouveaux défis débloqués
+													</div>
+												</motion.div>
+											</div>
 										</div>
 									</div>
-								</div>
+								</motion.div>
 							)}
 						</AnimatePresence>
 
@@ -312,7 +388,6 @@ export function Game() {
 							specialEventActive={specialEventsLogic.specialEventActive}
 							showParticles={powerUpsLogic.showParticles}
 							onParticlesComplete={() => powerUpsLogic.setShowParticles(null)}
-							activePowerUps={powerUpsLogic.activePowerUpDetails}
 						/>
 
 						{/* Power-ups */}
@@ -383,6 +458,24 @@ export function Game() {
 								/>
 							</div>
 						</div>
+
+						{/* Bouton de débogage pour le développement - uniquement visible en mode développement */}
+						{process.env.NODE_ENV === "development" && (
+							<div className="absolute bottom-2 right-2 z-50">
+								<button
+									onClick={() => {
+										// Forcer le passage au niveau suivant (pour le débogage)
+										for (let i = 0; i < 100; i++) {
+											gameLogic.handleSort(`debug-${i}`, "recycle");
+										}
+									}}
+									className="bg-slate-800/40 hover:bg-slate-800/60 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm"
+									title="Passer au niveau suivant (débogage)"
+								>
+									Debug: Next Level
+								</button>
+							</div>
+						)}
 
 						{/* Fait écologique amélioré */}
 						<AnimatePresence>
