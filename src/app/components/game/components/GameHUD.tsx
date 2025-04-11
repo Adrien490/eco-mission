@@ -30,6 +30,10 @@ const GameHUD: React.FC<GameHUDProps> = ({
 }) => {
 	// Animation du score
 	const [displayedScore, setDisplayedScore] = useState(score);
+	// Suivi du niveau précédent pour l'animation
+	const [prevLevel, setPrevLevel] = useState(level);
+	// État pour l'animation de changement de niveau
+	const [isLevelChanging, setIsLevelChanging] = useState(false);
 
 	useEffect(() => {
 		if (score > displayedScore) {
@@ -52,6 +56,22 @@ const GameHUD: React.FC<GameHUDProps> = ({
 			setDisplayedScore(score);
 		}
 	}, [score, displayedScore]);
+
+	useEffect(() => {
+		// Vérifier si le niveau a changé
+		if (level !== prevLevel) {
+			// Activer l'animation
+			setIsLevelChanging(true);
+
+			// Désactiver l'animation après un délai
+			setTimeout(() => {
+				setIsLevelChanging(false);
+			}, 3000);
+
+			// Mettre à jour le niveau précédent
+			setPrevLevel(level);
+		}
+	}, [level, prevLevel]);
 
 	return (
 		<>
@@ -138,7 +158,24 @@ const GameHUD: React.FC<GameHUDProps> = ({
 							>
 								<path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
 							</svg>
-							<span>Niveau {level}</span>
+							<motion.span
+								className={
+									isLevelChanging
+										? "text-green-600 dark:text-green-400 font-bold"
+										: ""
+								}
+								animate={
+									isLevelChanging
+										? {
+												scale: [1, 1.2, 1, 1.1, 1],
+												color: ["#059669", "#10b981", "#059669"],
+										  }
+										: { scale: 1 }
+								}
+								transition={{ duration: 2.5, repeat: 0 }}
+							>
+								Niveau {level}
+							</motion.span>
 						</div>
 
 						{/* Affichage du CO2 économisé */}

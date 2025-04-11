@@ -24,6 +24,8 @@ export function Game() {
 	const [showTutorial, setShowTutorial] = useState(false);
 	const [showFact, setShowFact] = useState<string | null>(null);
 	const [isGameActive, setIsGameActive] = useState(false); // État pour suivre si le jeu est actif
+	// Nouvel état pour l'animation de changement de niveau
+	const [showLevelUp, setShowLevelUp] = useState<number | null>(null);
 
 	// Hooks personnalisés
 	const {
@@ -99,6 +101,19 @@ export function Game() {
 		gameLogic.gameOver,
 		displayRandomFact,
 	]);
+
+	// Effet pour détecter le changement de niveau
+	useEffect(() => {
+		if (gameLogic.level > 1 && !gameLogic.gameOver && gameLogic.gameStarted) {
+			// Afficher l'animation de changement de niveau
+			setShowLevelUp(gameLogic.level);
+
+			// Cacher l'animation après quelques secondes
+			setTimeout(() => {
+				setShowLevelUp(null);
+			}, 3000);
+		}
+	}, [gameLogic.level, gameLogic.gameOver, gameLogic.gameStarted]);
 
 	// Gestion des power-ups
 	const powerUpsLogic = usePowerUps({
@@ -257,6 +272,22 @@ export function Game() {
 							savedCO2={gameLogic.savedCO2}
 							environmentType={environmentType}
 						/>
+
+						{/* Animation de passage de niveau */}
+						<AnimatePresence>
+							{showLevelUp && (
+								<div className="absolute inset-0 flex items-center justify-center z-50">
+									<div className="bg-green-500/90 px-8 py-6 rounded-xl shadow-2xl transform scale-110 animate-pulse">
+										<div className="text-center text-white">
+											<h2 className="text-4xl font-bold mb-2">
+												NIVEAU {showLevelUp}
+											</h2>
+											<p className="text-xl">C&apos;est parti !</p>
+										</div>
+									</div>
+								</div>
+							)}
+						</AnimatePresence>
 
 						{/* Pause overlay */}
 						{gameLogic.isPaused && (

@@ -177,29 +177,29 @@ export function useGameLogic(
 	// Amélioration de la configuration du jeu
 	const gameConfig = useMemo(
 		() => ({
-			initialSpeed: 0.9, // Augmenté pour un démarrage plus dynamique
+			initialSpeed: 1.1, // Augmenté de 0.9 à 1.1 pour un démarrage plus dynamique
 			maxSimultaneousItems: 3,
-			spawnInterval: { min: 850, max: 1500 }, // Réduit pour plus d'action
+			spawnInterval: { min: 750, max: 1400 }, // Réduit pour plus d'action
 			itemsPerWave: { min: 1, max: 3 },
 			movementComplexity: 0.6,
-			wobbleIntensity: { min: 2.5, max: 5.5 }, // Augmenté pour plus d'effet visuel
-			spinChance: 0.4, // Augmenté pour plus d'animations
+			wobbleIntensity: { min: 2.5, max: 5.5 },
+			spinChance: 0.4,
 			bonusLifeFrequency: 100,
-			fallingSpeedVariation: 0.25, // Plus de variation pour des mouvements naturels
+			fallingSpeedVariation: 0.25,
 			forgivenessTime: 300,
-			horizontalMovementSpeed: { min: 0.7, max: 1.2 }, // Augmenté significativement pour un mouvement constant
-			specialItemFrequency: 0.15, // Plus d'objets spéciaux
+			horizontalMovementSpeed: { min: 0.7, max: 1.2 },
+			specialItemFrequency: 0.15,
 			livesStart: 3,
 			speedIncreaseFactor: 0.05,
 			// Nouveaux paramètres pour l'accélération progressive
-			constantAcceleration: 0.005, // Augmenté pour une meilleure dynamique
-			maxItemSpeed: 3.5, // Vitesse maximale augmentée
+			constantAcceleration: 0.008, // Augmenté de 0.005 à 0.008
+			maxItemSpeed: 3.5,
 			// Paramètres pour Framer Motion
-			bounceStiffness: 200, // Rigidité du rebond pour Framer Motion
-			bounceDamping: 10, // Amortissement du rebond
-			animationEasing: "easeOut", // Type d'interpolation pour animations
+			bounceStiffness: 200,
+			bounceDamping: 10,
+			animationEasing: "easeOut",
 			// Fréquence des vérifications du mouvement
-			movementCheckInterval: 1500, // Plus fréquent
+			movementCheckInterval: 1500,
 		}),
 		[]
 	);
@@ -243,12 +243,16 @@ export function useGameLogic(
 							hasLeveledUp: true,
 						};
 
-						// Renvoyer l'état mis à jour sans appeler dispatch
+						// Assurer que le changement de niveau est correctement appliqué
+						// et un message de feedback est affiché
+						console.log(`Passage au niveau ${newLevel}`);
+
+						// Renvoyer l'état mis à jour avec un niveau incrémenté
 						return {
 							...state,
 							level: newLevel,
 							levelProgress: 0,
-							gameSpeed: Math.min(state.gameSpeed + 0.1, 1.5),
+							gameSpeed: Math.min(state.gameSpeed + 0.15, 1.5), // Augmenté pour plus d'impact
 						};
 					}
 					return { ...state, levelProgress: newProgress };
@@ -277,11 +281,11 @@ export function useGameLogic(
 					// Facteur de progression dépendant du niveau - niveau 1 beaucoup plus rapide
 					let progressFactor = 1;
 					if (state.level === 1) {
-						// Niveau 1: progression ultra rapide (3x plus rapide)
-						progressFactor = 3;
+						// Niveau 1: progression ultra rapide (5x plus rapide) - MODIFIÉ
+						progressFactor = 5;
 					} else if (state.level === 2) {
-						// Niveau 2: progression rapide (1.5x)
-						progressFactor = 1.5;
+						// Niveau 2: progression rapide (2x) - MODIFIÉ
+						progressFactor = 2;
 					} else {
 						// Niveau 3+: progression normale
 						progressFactor = 1;
@@ -308,9 +312,19 @@ export function useGameLogic(
 	// Calcul de la durée de chute
 	const calculateFallingDuration = useCallback(
 		(level: number, gameSpeed: number, speedModifier: number) => {
-			const baseDuration = 8 - level * 0.4;
+			// Facteur de niveau: plus le niveau est élevé, plus les objets tombent vite
+			let levelFactor = 0.4;
+
+			// Réduction plus significative au niveau 2 pour rendre le changement plus évident
+			if (level === 2) {
+				levelFactor = 0.7; // Plus de réduction pour niveau 2
+			} else if (level >= 3) {
+				levelFactor = 0.5; // Réduction normale pour niveaux 3+
+			}
+
+			const baseDuration = 8 - level * levelFactor;
 			const adjustedDuration = baseDuration / (gameSpeed * speedModifier);
-			return Math.max(3, Math.min(adjustedDuration, 8));
+			return Math.max(2.5, Math.min(adjustedDuration, 8));
 		},
 		[]
 	);
@@ -322,19 +336,19 @@ export function useGameLogic(
 
 		// Intervalle de base adapté au niveau
 		const baseDelay = Math.max(
-			spawnInterval.max - gameState.level * 100,
+			spawnInterval.max - gameState.level * 150, // Augmenté de 100 à 150 pour plus d'impact
 			spawnInterval.min
 		);
 
-		// Ajustement aléatoire pour éviter la monotonie
-		const randomFactor = 0.8 + Math.random() * 0.4;
+		// Ajustement aléatoire pour éviter la monotonie (réduit pour plus de régularité)
+		const randomFactor = 0.9 + Math.random() * 0.2;
 
 		// Réduction en fonction du modificateur de vitesse et du niveau
 		const adjustedDelay =
 			(baseDelay * randomFactor) /
-			(gameState.speedModifier * (1 + gameState.level * 0.1));
+			(gameState.speedModifier * (1 + gameState.level * 0.15)); // Augmenté de 0.1 à 0.15
 
-		return Math.max(500, adjustedDelay);
+		return Math.max(400, adjustedDelay); // Minimum réduit à 400ms
 	}, [gameState.level, gameState.speedModifier]);
 
 	// Calculer le nombre d'objets à générer dans une vague
@@ -948,79 +962,27 @@ export function useGameLogic(
 	// Assigner la référence
 	spawnSpecificItemRef.current = spawnSpecificItem;
 
-	// Ajouter un nouvel effet pour gérer les changements de niveau
+	// Effet pour gérer la mise à jour des niveaux et notifications
 	useEffect(() => {
-		if (levelUpRef.current && levelUpRef.current.hasLeveledUp) {
-			const { newLevel } = levelUpRef.current;
+		// Si un level-up vient de se produire
+		if (levelUpRef.current?.hasLeveledUp) {
+			// Notifications dans la console (pour debugging)
+			console.log(`Niveau ${levelUpRef.current.newLevel} atteint!`);
 
-			// Marquer comme traité pour éviter les exécutions multiples
-			levelUpRef.current.hasLeveledUp = false;
-
-			// Message personnalisé selon le niveau
-			let levelMessage = `Niveau ${newLevel} ! Difficulté augmentée.`;
-
-			// Message spécifique pour le passage du niveau 1 au niveau 2
-			if (newLevel === 2) {
-				levelMessage =
-					"Niveau 2 ! La difficulté augmente significativement à partir de maintenant.";
-			} else if (newLevel === 3) {
-				levelMessage =
-					"Niveau 3 ! Le jeu devient plus complexe, soyez rapide !";
-			} else if (newLevel >= 4) {
-				levelMessage = `Niveau ${newLevel} ! Vous êtes maintenant un expert, relevez le défi !`;
-			}
-
-			// Afficher le message personnalisé
-			dispatch({
-				type: "SHOW_TIP",
-				payload: levelMessage,
-			});
-
-			if (tipTimeoutRef.current) {
-				clearTimeout(tipTimeoutRef.current);
-			}
-
-			tipTimeoutRef.current = setTimeout(
-				() => dispatch({ type: "HIDE_TIP" }),
-				3000
-			);
-
-			// Déclencher les célébrations de façon différée
-			setTimeout(() => {
-				// Récupérer les objets festifs pour le nouveau niveau
-				// Générer une vague spéciale pour célébrer le nouveau niveau
-				const eventItems: GameItem[] = [];
-				const itemsToUse =
-					!gameItems || gameItems.length === 0 ? fallbackItems : gameItems;
-
-				// Vague plus importante pour célébrer le niveau
-				const celebrationCount = Math.min(newLevel + 2, 5); // Limiter à 5 max
-
-				for (let i = 0; i < celebrationCount; i++) {
-					const randomItem =
-						itemsToUse[Math.floor(Math.random() * itemsToUse.length)];
-					if (randomItem) {
-						eventItems.push(randomItem);
+			// Pour le passage au niveau 2, appliquer un boost spécial
+			if (levelUpRef.current.newLevel === 2) {
+				// Générer immédiatement une vague d'objets plus intense
+				setTimeout(() => {
+					if (!gameState.gameOver && !gameState.isPaused) {
+						spawnWaveRef.current();
 					}
-				}
+				}, 1500);
+			}
 
-				// Programmer la vague avec un délai
-				let spawnDelay = 0;
-				for (let i = 0; i < eventItems.length; i++) {
-					// Espacer les objets pour une meilleure expérience visuelle
-					spawnDelay += 300;
-
-					// Planifier le spawn avec temporisation croissante
-					const itemToSpawn = eventItems[i];
-					setTimeout(() => {
-						if (!gameState.gameOver && !gameState.isPaused) {
-							spawnSpecificItemRef.current(itemToSpawn);
-						}
-					}, spawnDelay);
-				}
-			}, 800);
+			// Réinitialiser pour ne pas répéter l'événement
+			levelUpRef.current.hasLeveledUp = false;
 		}
-	}, [gameState.level, gameState.gameOver, gameState.isPaused]);
+	}, [gameState.level, gameState.isPaused, gameState.gameOver]);
 
 	// Nouvelle fonction pour fermer manuellement un tip
 	const hideTip = useCallback(() => {
